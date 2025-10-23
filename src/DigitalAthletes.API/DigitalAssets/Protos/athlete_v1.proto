@@ -1,0 +1,82 @@
+syntax = "proto3";
+
+option csharp_namespace = "eShop.DigitalAthletes.API.Proto";
+
+package digitalathletes;
+
+// Digital athlete character data for networked gameplay
+message DigitalAthlete {
+  string id = 1;
+  string name = 2;
+  string athlete_type = 3;
+
+  Appearance appearance = 4;
+  Attributes attributes = 5;
+  repeated Animation animations = 6;
+  SyncData sync_data = 7;
+
+  string version = 8;
+  int64 created_timestamp = 9;
+}
+
+message Appearance {
+  Color primary_color = 1;
+  Color secondary_color = 2;
+  Color accent_color = 3;
+  float height = 4;
+  float width = 5;
+  string style_preset = 6;
+  bytes custom_sprite_data = 7;
+}
+
+message Color {
+  int32 r = 1;
+  int32 g = 2;
+  int32 b = 3;
+  int32 a = 4;
+}
+
+message Attributes {
+  int32 speed = 1;
+  int32 strength = 2;
+  int32 agility = 3;
+  int32 endurance = 4;
+  int32 skill = 5;
+  repeated string abilities = 6;
+  map<string, float> custom_modifiers = 7;
+}
+
+message Animation {
+  string name = 1;
+  AnimationType type = 2;
+  int32 frame_count = 3;
+  float duration_ms = 4;
+  repeated KeyFrame keyframes = 5;
+  bool loops = 6;
+}
+
+enum AnimationType {
+  IDLE = 0;
+  MOVEMENT = 1;
+  ACTION = 2;
+  REACTION = 3;
+  CELEBRATION = 4;
+}
+
+message KeyFrame {
+  int32 frame_number = 1;
+  float position_x = 2;
+  float position_y = 3;
+  float rotation = 4;
+  float scale = 5;
+}
+
+message SyncData {
+  int32 update_frequency_hz = 1;
+  bool client_side_prediction = 2;
+  float interpolation_delay_ms = 3;
+  bool sync_position = 4;
+  bool sync_rotation = 5;
+  bool sync_animation = 6;
+  bool sync_attributes = 7;
+}

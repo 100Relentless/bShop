@@ -38,6 +38,10 @@ public static class Extensions
         builder.Services.AddHttpClient<OrderingService>(o => o.BaseAddress = new("https+http://ordering-api"))
             .AddApiVersion(1.0)
             .AddAuthToken();
+
+        builder.Services.AddHttpClient<DigitalAthletesService>(o => o.BaseAddress = new("https+http://digital-athletes-api"))
+            .AddApiVersion(1.0)
+            .AddAuthToken();
     }
 
     public static void AddEventBusSubscriptions(this IEventBusBuilder eventBus)

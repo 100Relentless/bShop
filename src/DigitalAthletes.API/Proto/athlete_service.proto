@@ -1,0 +1,111 @@
+syntax = "proto3";
+
+option csharp_namespace = "eShop.DigitalAthletes.API.Proto";
+
+package digitalathletes;
+
+import "character.proto";
+
+// Service for managing digital athlete characters and gameplay
+service AthleteService {
+  // Character management
+  rpc GetCharacter(GetCharacterRequest) returns (GetCharacterResponse) {}
+  rpc ValidateCharacter(ValidateCharacterRequest) returns (ValidateCharacterResponse) {}
+  rpc GetCharactersByOwner(GetCharactersByOwnerRequest) returns (GetCharactersByOwnerResponse) {}
+
+  // Real-time gameplay - streaming RPCs for multiplayer
+  rpc StreamCharacterState(stream CharacterState) returns (stream CharacterState) {}
+  rpc SendPlayerInput(stream PlayerInput) returns (stream CharacterState) {}
+
+  // Session management
+  rpc CreateGameSession(CreateSessionRequest) returns (CreateSessionResponse) {}
+  rpc JoinGameSession(JoinSessionRequest) returns (JoinSessionResponse) {}
+  rpc LeaveGameSession(LeaveSessionRequest) returns (LeaveSessionResponse) {}
+  rpc GetSessionState(GetSessionStateRequest) returns (GetSessionStateResponse) {}
+}
+
+// Character management messages
+message GetCharacterRequest {
+  string character_id = 1;
+  string requesting_user_id = 2; // For authorization
+}
+
+message GetCharacterResponse {
+  DigitalAthlete character = 1;
+  bool success = 2;
+  string error_message = 3;
+}
+
+message ValidateCharacterRequest {
+  DigitalAthlete character = 1;
+  string version = 2;
+}
+
+message ValidateCharacterResponse {
+  bool is_valid = 1;
+  repeated string validation_errors = 2;
+  string recommended_version = 3;
+}
+
+message GetCharactersByOwnerRequest {
+  string owner_user_id = 1;
+  int32 page_size = 2;
+  int32 page_number = 3;
+}
+
+message GetCharactersByOwnerResponse {
+  repeated DigitalAthlete characters = 1;
+  int32 total_count = 2;
+  bool success = 3;
+  string error_message = 4;
+}
+
+// Session management messages
+message CreateSessionRequest {
+  string creator_user_id = 1;
+  string game_mode = 2;
+  int32 max_players = 3;
+  map<string, string> game_rules = 4;
+}
+
+message CreateSessionResponse {
+  string session_id = 1;
+  GameSession session = 2;
+  bool success = 3;
+  string error_message = 4;
+}
+
+message JoinSessionRequest {
+  string session_id = 1;
+  string user_id = 2;
+  string character_id = 3;
+}
+
+message JoinSessionResponse {
+  bool success = 1;
+  string error_message = 2;
+  GameSession session = 3;
+  repeated CharacterState current_players = 4; // Other players already in session
+}
+
+message LeaveSessionRequest {
+  string session_id = 1;
+  string user_id = 2;
+}
+
+message LeaveSessionResponse {
+  bool success = 1;
+  string error_message = 2;
+}
+
+message GetSessionStateRequest {
+  string session_id = 1;
+  string requesting_user_id = 2;
+}
+
+message GetSessionStateResponse {
+  GameSession session = 1;
+  repeated CharacterState player_states = 2;
+  bool success = 3;
+  string error_message = 4;
+}

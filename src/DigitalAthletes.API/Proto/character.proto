@@ -1,0 +1,183 @@
+syntax = "proto3";
+
+option csharp_namespace = "eShop.DigitalAthletes.API.Proto";
+
+package digitalathletes;
+
+// Digital athlete character data for networked gameplay
+message DigitalAthlete {
+  // Identity
+  string id = 1;
+  string name = 2;
+  string athlete_type = 3; // e.g., "Runner", "Fighter", "Racer", "Jumper"
+
+  // Visual properties (tiny character appearance)
+  Appearance appearance = 4;
+
+  // Gameplay attributes
+  Attributes attributes = 5;
+
+  // Animation and behavior data
+  repeated Animation animations = 6;
+
+  // Network sync data
+  SyncData sync_data = 7;
+
+  // Metadata
+  string version = 8;
+  int64 created_timestamp = 9;
+}
+
+message Appearance {
+  // Color scheme (RGB)
+  Color primary_color = 1;
+  Color secondary_color = 2;
+  Color accent_color = 3;
+
+  // Size and shape (for tiny characters)
+  float height = 4; // in game units
+  float width = 5;
+
+  // Visual style identifier
+  string style_preset = 6; // e.g., "pixelated", "smooth", "cartoon"
+
+  // Custom sprite/model data (if any)
+  bytes custom_sprite_data = 7;
+}
+
+message Color {
+  int32 r = 1; // 0-255
+  int32 g = 2; // 0-255
+  int32 b = 3; // 0-255
+  int32 a = 4; // 0-255 alpha
+}
+
+message Attributes {
+  // Core stats (0-100 scale)
+  int32 speed = 1;
+  int32 strength = 2;
+  int32 agility = 3;
+  int32 endurance = 4;
+  int32 skill = 5;
+
+  // Special abilities
+  repeated string abilities = 6;
+
+  // Game-specific modifiers
+  map<string, float> custom_modifiers = 7;
+}
+
+message Animation {
+  string name = 1; // e.g., "walk", "run", "jump", "celebrate"
+  AnimationType type = 2;
+  int32 frame_count = 3;
+  float duration_ms = 4;
+  repeated KeyFrame keyframes = 5;
+  bool loops = 6;
+}
+
+enum AnimationType {
+  IDLE = 0;
+  MOVEMENT = 1;
+  ACTION = 2;
+  REACTION = 3;
+  CELEBRATION = 4;
+}
+
+message KeyFrame {
+  int32 frame_number = 1;
+  float position_x = 2;
+  float position_y = 3;
+  float rotation = 4;
+  float scale = 5;
+}
+
+message SyncData {
+  // Network synchronization settings
+  int32 update_frequency_hz = 1; // How often to sync over network
+  bool client_side_prediction = 2;
+  float interpolation_delay_ms = 3;
+
+  // State synchronization flags
+  bool sync_position = 4;
+  bool sync_rotation = 5;
+  bool sync_animation = 6;
+  bool sync_attributes = 7;
+}
+
+// Character state for real-time gameplay
+message CharacterState {
+  string character_id = 1;
+  string player_id = 2;
+
+  // Real-time position and movement
+  Vector3 position = 3;
+  Vector3 velocity = 4;
+  float rotation = 5;
+
+  // Current animation state
+  string current_animation = 6;
+  float animation_time = 7;
+
+  // Game state
+  int32 health = 8;
+  int32 score = 9;
+  map<string, float> custom_state = 10;
+
+  // Network timing
+  int64 timestamp = 11;
+  int32 sequence_number = 12;
+}
+
+message Vector3 {
+  float x = 1;
+  float y = 2;
+  float z = 3;
+}
+
+// Player input for character control
+message PlayerInput {
+  string player_id = 1;
+  string character_id = 2;
+
+  // Movement input
+  Vector2 movement_vector = 3; // normalized direction
+  bool jump = 4;
+  bool action = 5;
+
+  // Additional inputs
+  map<string, bool> button_states = 6;
+
+  // Input timing
+  int64 timestamp = 7;
+  int32 sequence_number = 8;
+}
+
+message Vector2 {
+  float x = 1;
+  float y = 2;
+}
+
+// Match/session data for multiplayer
+message GameSession {
+  string session_id = 1;
+  string game_mode = 2; // e.g., "race", "battle", "coop"
+  repeated string player_ids = 3;
+
+  // Session settings
+  int32 max_players = 4;
+  map<string, string> game_rules = 5;
+
+  // Session state
+  SessionState state = 6;
+  int64 start_timestamp = 7;
+  int64 end_timestamp = 8;
+}
+
+enum SessionState {
+  WAITING = 0;
+  STARTING = 1;
+  IN_PROGRESS = 2;
+  PAUSED = 3;
+  FINISHED = 4;
+}
